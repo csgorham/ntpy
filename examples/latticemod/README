@@ -1,0 +1,215 @@
+Table of Contents:
+[1.0] - Developer's section
+	[1.1] - Notes
+	[1.2] - File types
+	[1.3] - Lattice structures
+	[1.4] - Boundaries
+[2.0] - Documentation
+	[2.1] - def buildNumpy
+	[2.2] - class Lammps
+		[2.2.1] - def buildLammps
+	[2.3] - class Xyz
+		[2.3.1] - def buildXyz
+	[2.4] - class Block
+		[2.4.1] - def numUcell
+		[2.4.2] - def numAtomsUcell
+		[2.4.3] - def numAtoms
+		[2.4.4] - def Lx
+		[2.4.5] - def Ly
+		[2.4.6] - def Lz
+	[2.5] - def printBasis
+	[2.6] - def kpt
+	[2.7] - def cubicKptSym
+
+-----------------------------
+
+[1.0] - Developer's section
+	[1.1] - Any changes to the documentation of this package
+		should be reflected in this file as well as the doc strings
+		of the module, with the exception of example code which
+		should only be included in this file.
+	[1.2] - File types
+	File types 
+		Supported:
+			lammmps (alpha)
+			xyz (alpha)
+		Planned:
+			gulp
+		Suggested:
+  
+	[1.3] - Lattice structures
+		Supported:
+			sc	(simple cubic)
+			fcc (face centered cubic)
+			bcc (body centered cubic)
+			diamond
+		Planned:
+		Suggested:
+  
+	[1.4] - Boundaries
+		Supported:
+			Multiple boundaries in z direction
+			Boundary spacing relative to block periodic boundary
+		Planned:
+		Suggested:
+			Multiple boundaries in x, y, and z directions -KDP
+
+[2.0] - Documentation
+	[2.1] - def buildNumpy
+		This creates numpy array based on the blocks provided
+
+		lattice.Numpy.buildNumpy(blocks)
+		Parameters
+		----------
+			blocks : list of type Block
+				The blocks used to build the numpy array. Blocks
+				should be put in order of origin to z-direction
+				max.
+		Returns
+		----------
+			Numpy : numpy array
+				A numpy array of shape (numAtoms, 3) and type
+				float is returned.
+
+	[2.2] - class Lammps
+		Creates and object that represents a single lammps file
+
+		ntpy.lattice.Lammps(file_name)
+		Parameters
+		----------
+			file_name : str
+				The name of the lammps file
+
+		[2.2.1] - def buildLammps
+			This creates and writes the lammps file based on the blocks provided
+
+			ntpy.lattice.Lammps.buildLammps(blocks)
+			Parameters
+			----------
+				blocks : list of type Block
+					The blocks used to build the lammps file. Blocks
+					should be put in order of origin to z-direction
+					max.
+				noisy : bool, optional
+					If true, then function will print out lammps details, otherwise
+					the function will be quiet (default).
+
+	[2.3] - class Xyz
+		Creates an object that represents a single xyz file.
+
+		ntpy.lattice.Xyz(file_name)
+		Parameters
+		----------
+			file_name : str
+				The name of the xyz file
+
+		[2.3.1] - def buildXyz
+			This creates and writes the xyz file based on the blocks provided
+
+			ntpy.lattice.Xyz.buildXyz(blocks)
+			Parameters
+			----------
+				blocks : list of type Block
+					The blocks used to build the lammps file. Blocks
+					should be put in order of origin to z-direction
+					max.
+				noisy : bool, optional
+					If true, then function will print out Xyz details, otherwise
+					the function will be quiet (default).
+
+	[2.4] - class Block
+		Defines a singular lattice that can linearly interfaced with other lattices
+
+		ntpy.lattice.Block(lat_vector, lat_type, dim, bd_space=0, atom_mass=None, atom_type=None)
+		Parameters
+		----------
+			lat_vector : list of type float
+				The lattice constants for the x, y, and z directions
+			lat_type : str
+				The type of lattice to be constructed. Currently only
+				'sc', 'fcc', 'bcc', and 'diamond' are supported
+			dim : list of type int
+				The dimensions of the lattice in the x, y, and z directions.	
+				Dimensions are in units of lattice units.
+			bd_space : float, optional
+				The amount of space added at the terminating z boundary of
+				the lattice. The space added is relative to the standard
+				periodic foundary of the lattice. A negative value reduces
+				the amount of space at the boundary.
+			atom_mass : list of type float, optional
+				The atom masses corresponding to the atoms in the basis vector.
+				If only one mass is used then only one mass need be supplied.
+				For a listing of the basis vector for each lattice type used
+				by this module, use the lattice function "basis_print".
+				Required for lammps files.
+			atom_type : list of type str, optional
+				The atom types of the lattice. Required for xyz files.
+
+		[2.4.1] - def numUcell
+			Int of the number of unit cells of the Block.
+
+		[2.4.2] - def numAtomsUcell
+			Int of the number of atoms in the unit cell.
+
+		[2.4.3] - def numAtoms
+			Int of the number of atoms in the Block.
+
+		[2.4.4] - def Lx
+			Float of the length of the Block in the x-direction.
+
+		[2.4.5] - def Ly
+			Float of the length of the Block in the y-direction.
+
+		[2.4.6] - def Lz
+			Float of the length of the Block in the z-direction.
+
+	[2.5] - def printBasis
+		Prints the basis vectors defined in this module for reference
+
+		ntpy.lattice.printBasis(lat_type)
+		Parameters
+		----------
+			lat_type : str
+				The type of lattice to be constructed. Currently only
+				'sc', 'fcc', 'bcc', and 'diamond' are supported
+
+	[2.6] - def kpt
+		Creates an Lennard-Jones k-point list using either conventional or
+		primative lattice vectors.
+
+		ntpy.lattice.kpt(dim, conv=False)
+		Parameters
+		----------
+			dim : array of type int
+				An array that contains the number of unitcells in all three
+				directions.
+			conv : bool, optional
+				If true, then k-points will be created using conventional 
+				lattice vector, otherwise the k-points will be created using
+				primative lattice vector (default).
+		Returns
+		----------
+			kpt : array of type float
+				The array of k points in the shape of (numKpts, 3). 
+
+	[2.7] - def cubicKptSym
+		Reduces the k-point list based on cubic symmetries.
+
+		ntpy.lattice.cubicKptSym(kpt)
+		Parameters
+		----------
+			kpt : numpy array of type float
+				An array that contains the k-point list in any order. Array should
+				be of shape (numKpts, 3).
+		Returns
+		----------
+			irrKpt : numpy array of type float
+				An array that contains the irreducible k-points
+			irrKptCnt : numpy array of type int
+				An array that contains the number of k-points reduced into one
+				irreducible k-point
+			degen : numpy array of type int
+				An array the length of numKpts that relates the index of the
+				original k-points to their equivalent index in irrKpt. E.g.
+				degen[6] = 2 yeilds kpt[6,:] is symmetric to irrKpt[2,:].
+
