@@ -6,20 +6,47 @@ import struct
 import numpy as np
 import numpy.ma as ma
 
-def lmpReadBin(filename, numTstep, numAtoms, numDim=3):
-	boundary = False
-	bigInt = False
-	if bigInt:
+def lmpReadBin(filename, numTstep, numAtoms, numCol=3, oldStyle=False, bteOrd='@'):
+	"""
+	This function reads in a lammps binary file.
+
+	ntpy.lmpReadBin(filename, numTstep, numAtoms, numCol=3, oldStyle=False, bteOrd='@')
+	Parameters
+	----------
+		filename : str
+			The name of the lammps binary file.
+		numTstep : int
+			How many timesteps to read in.
+		numAtoms : int
+			How many atoms in the dump file.
+		numCol : int, optional
+			The number of parameters that were dumped.
+		oldStyle : bool, optional
+			If True, then the binary is assumed to follow the old style. That is,
+			the ntimestep and natoms variables are not of ctype int64_t and the
+			boundary variables are omitted. Otherwise, the current binary format
+			is assumed (default).
+		bteOrd : {'@','<','>'}, optional
+			Designates the byte order (endianness). Character '<' reads using 
+			little-endian while '>' reads using big-endian. By default, '@' is
+			used which follows the machine endianness.
+	Returns
+	-------
+		values : list of ndarrays of type float
+			A list of shape (numCol) with numpy arrays of shape (numTstep, numAtoms).
+	"""
+	# Initialize qdot
+	if oldStyle:
 		bIt = 'q'
 		bIb = 8
+		boundary = True
 	else:
 		bIt = 'i'
 		bIb = 4
-	bteOrd = '@'
-
-
-	values = [0] * numDim
-	for dims in range(numDim):
+		boundary = False
+		
+	values = [0] * numCol
+	for dims in range(numCol):
 		values[dims] = np.zeros( (numTstep, numAtoms), dtype=float)
 
 	f = open(filename, 'rb')
@@ -56,11 +83,11 @@ def lmpReadBin(filename, numTstep, numAtoms, numDim=3):
 				n = struct.unpack(bteOrd+ 'i', f.read(4))[0]
 			
 			# Check if number of values matches with user arguments
-			assert n == (numAtoms * numDim), 'ERROR: numAtoms or numDim does not agree with file'
+			assert n == (numAtoms * numCol), 'ERROR: numAtoms or numCol does not agree with file'
 
 			# Read chunk
-			for i in range(n / numDim):
-				for dims in range(numDim):
+			for i in range(n / numCol):
+				for dims in range(numCol):
 					values[dims][itime,i] = struct.unpack(bteOrd+ 'd', f.read(8))[0]
 		else:
 			print 'ERROR: EOF reached'
@@ -75,20 +102,54 @@ def nmdProc(velx, vely, velz, eigVec, latPosx, latPosy, latPosz,
 			latVecx, latVecy, latVecz, kpt, ikpt, imode, numAtomsUC, numUC, mass,
 			numTstep):
 	"""
-	This creates numpy array based on the blocks provided
+	This function performs normal mode decomposition.
 
-	lattice.Numpy.buildNumpy(blocks)
+	nmd.nmdProc(velx, vely, velz, eigVec, latPosx, latPosy, latPosz, latVecx, latVecy,
+				latVecz, kpt, ikpt, imode, numAtomsUC, numUC, mass, numTstep)
 	Parameters
 	----------
-		blocks : list of type Block
-			The blocks used to build the numpy array. Blocks
-			should be put in order of origin to z-direction
-			max.
+		velx : ndarray of type float
+			Numpy array containing the x velocities.
+		vely : ndarray of type float
+			Numpy array containing the y velocities.
+		velz : ndarray of type float
+			Numpy array containing the z velocities.
+		eigVec : ndarray of type float
+			Numpy array containing the eigenvectors. Eigenvectors must be in shape
+			(numKpts * numModes, numModes), where the numModes by numModes arrays
+			are stacked ontop of each other.
+		latPosx : ndarray of type float
+			Numpy array containing the x positions.
+		latPosy : ndarray of type float
+			Numpy array containing the y positions.
+		latPosz : ndarray of type float
+			Numpy array containing the z positions.
+		latVecx : float
+			The lattice vector in the x direction.
+		latVecy : float
+			The lattice vector in the y direction.
+		latVecy : float
+			The lattice vector in the z direction.
+		kpt : ndarray of type float
+			The array of kpoints of shape (numKpts, 3).
+		ikpt : int
+			The index of the current kpoint in kpt.
+		imode : int
+			The index of the current mode.
+		numAtomsUC : int
+			The number of atoms in the unit cell.
+		numUC : int
+			The number of unit cells.
+		mass : float or ndarray
+			Either the mass of all the atoms or a numpy array of the masses of the
+			unit cell or the entire simulation.
+		numTstep : int
+			The number of times steps.
 	Returns
-	----------
-		Numpy : numpy array
-			A numpy array of shape (numAtoms, 3) and type
-			float is returned.
+	-------
+		specEDFft : ndarray
+			Numpy array containind the spectral energy density of the fft and of 
+			shape (numTstep / 2) and type float.
 	"""
 	# Initialize qdot
 	qdot = np.zeros( (nmd.numTstep) )
