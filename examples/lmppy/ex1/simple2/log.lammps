@@ -1,0 +1,68 @@
+LAMMPS (30 Nov 2010)
+# 3d Lennard-Jones melt
+
+### Geometry ###
+units		lj
+atom_style	atomic
+read_data	in.pos
+  orthogonal box = (0 0 0) to (6.25294 6.25294 6.25294)
+  1 by 1 by 1 processor grid
+  256 atoms
+
+### LJ Potentials ###
+pair_style	lj/cut 2.5
+pair_coeff	* * 1.0 1.0
+pair_modify	shift yes
+
+### Variables ###
+# LJ Parameters
+variable kB				equal 1.3806504e-23
+variable sigma_Ar		equal 3.4e-10
+variable eps_Ar			equal 1.67e-21
+variable mass_Ar		equal 6.63e-26
+variable tau_Ar			equal 2.1423e-12
+
+variable seed	equal 11111
+variable temp	equal 20*(${kB}/${eps_Ar})
+variable temp	equal 20*(1.3806504e-23/${eps_Ar})
+variable temp	equal 20*(1.3806504e-23/1.67e-21)
+variable dt		equal 0.002
+
+# Velocity variables
+variable	vx atom vx
+variable	vy atom vy
+variable	vz atom vz
+
+###--- MAIN ---###
+velocity				all create ${temp} ${seed} dist gaussian mom yes
+velocity				all create 0.1653473533 ${seed} dist gaussian mom yes
+velocity				all create 0.1653473533 11111 dist gaussian mom yes
+fix		1 all nve
+	dump		vel all custom 32 out.vel.bin vx vy vz
+	run		32768
+Memory usage per processor = 1.50328 Mbytes
+Step Temp E_pair E_mol TotEng Press 
+       0   0.16534735   -7.4420341            0   -7.1949819   -1.4753638 
+   32768  0.083409579    -7.319414            0   -7.1947883  -0.79002215 
+Loop time of 15.4455 on 1 procs for 32768 steps with 256 atoms
+
+Pair  time (%) = 13.8294 (89.5369)
+Neigh time (%) = 0 (0)
+Comm  time (%) = 0.992803 (6.42777)
+Outpt time (%) = 0.022676 (0.146813)
+Other time (%) = 0.600601 (3.88851)
+
+Nlocal:    256 ave 256 max 256 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1431 ave 1431 max 1431 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    11008 ave 11008 max 11008 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 11008
+Ave neighs/atom = 43
+Neighbor list builds = 0
+Dangerous builds = 0
+unfix		1
+undump		vel
+

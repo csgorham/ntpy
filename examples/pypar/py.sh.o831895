@@ -1,0 +1,18 @@
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+I am proc 7 of 8 on node n6
+I am proc 6 of 8 on node n6
+I am proc 3 of 8 on node n6
+I am proc 1 of 8 on node n6
+Pypar (version 2.1.5) initialised MPI OK with 8 processors
+I am proc 0 of 8 on node n6
+I am proc 2 of 8 on node n6
+I am proc 4 of 8 on node n6
+I am proc 5 of 8 on node n6
+Processor 0 received message "P0P1P2P3P4P5P6P7" from processor 7

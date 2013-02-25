@@ -1,0 +1,97 @@
+--------------------------------------------------------------------------
+WARNING: There is at least one OpenFabrics device found but there are
+no active ports detected (or Open MPI was unable to use them).  This
+is most certainly not what you wanted.  Check your cables, subnet
+manager configuration, etc.  The openib BTL will be ignored for this
+job.
+
+  Local host: n7
+--------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jason/pypar/parabola/test.py", line 9, in <module>
+Traceback (most recent call last):
+  File "/home/jason/pypar/parabola/test.py", line 9, in <module>
+    parallel_solve_problem(problem.initialize, problem.func, problem.finalize, my_rank, num_procs, pypar.send, pypar.receive)
+  File "/home/jason/pypar/parabola/Parabola.py", line 29, in parallel_solve_problem
+    parallel_solve_problem(problem.initialize, problem.func, problem.finalize, my_rank, num_procs, pypar.send, pypar.receive)
+  File "/home/jason/pypar/parabola/Parabola.py", line 29, in parallel_solve_problem
+Traceback (most recent call last):
+  File "/home/jason/pypar/parabola/test.py", line 9, in <module>
+    parallel_solve_problem(problem.initialize, problem.func, problem.finalize, my_rank, num_procs, pypar.send, pypar.receive)
+  File "/home/jason/pypar/parabola/Parabola.py", line 29, in parallel_solve_problem
+Traceback (most recent call last):
+  File "/home/jason/pypar/parabola/test.py", line 9, in <module>
+    my_input_args = get_subproblem_input_args(input_args, my_rank, num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 10, in get_subproblem_input_args
+    my_input_args = get_subproblem_input_args(input_args, my_rank, num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 10, in get_subproblem_input_args
+    parallel_solve_problem(problem.initialize, problem.func, problem.finalize, my_rank, num_procs, pypar.send, pypar.receive)
+  File "/home/jason/pypar/parabola/Parabola.py", line 29, in parallel_solve_problem
+Traceback (most recent call last):
+  File "/home/jason/pypar/parabola/test.py", line 9, in <module>
+    sub_ns = simple_partitioning(len(input_args), num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 6, in simple_partitioning
+    parallel_solve_problem(problem.initialize, problem.func, problem.finalize, my_rank, num_procs, pypar.send, pypar.receive)
+  File "/home/jason/pypar/parabola/Parabola.py", line 29, in parallel_solve_problem
+    sub_ns = simple_partitioning(len(input_args), num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 6, in simple_partitioning
+    my_input_args = get_subproblem_input_args(input_args, my_rank, num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 10, in get_subproblem_input_args
+    my_input_args = get_subproblem_input_args(input_args, my_rank, num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 10, in get_subproblem_input_args
+    sublength[i] += 1
+NameError: global name 'sublength' is not defined
+    my_input_args = get_subproblem_input_args(input_args, my_rank, num_procs)
+Traceback (most recent call last):
+  File "/home/jason/pypar/parabola/test.py", line 9, in <module>
+  File "/home/jason/pypar/parabola/Parabola.py", line 10, in get_subproblem_input_args
+    sublength[i] += 1
+NameError: global name 'sublength' is not defined
+    sub_ns = simple_partitioning(len(input_args), num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 6, in simple_partitioning
+    parallel_solve_problem(problem.initialize, problem.func, problem.finalize, my_rank, num_procs, pypar.send, pypar.receive)
+    sub_ns = simple_partitioning(len(input_args), num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 29, in parallel_solve_problem
+  File "/home/jason/pypar/parabola/Parabola.py", line 6, in simple_partitioning
+    sublength[i] += 1
+NameError: global name 'sublength' is not defined
+    my_input_args = get_subproblem_input_args(input_args, my_rank, num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 10, in get_subproblem_input_args
+Traceback (most recent call last):
+  File "/home/jason/pypar/parabola/test.py", line 9, in <module>
+    sublength[i] += 1
+NameError: global name 'sublength' is not defined
+    sub_ns = simple_partitioning(len(input_args), num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 6, in simple_partitioning
+    parallel_solve_problem(problem.initialize, problem.func, problem.finalize, my_rank, num_procs, pypar.send, pypar.receive)
+  File "/home/jason/pypar/parabola/Parabola.py", line 29, in parallel_solve_problem
+    sublength[i] += 1
+NameError: global name 'sublength' is not defined
+    my_input_args = get_subproblem_input_args(input_args, my_rank, num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 10, in get_subproblem_input_args
+    sub_ns = simple_partitioning(len(input_args), num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 6, in simple_partitioning
+    sublength[i] += 1
+NameError: global name 'sublength' is not defined
+Traceback (most recent call last):
+  File "/home/jason/pypar/parabola/test.py", line 9, in <module>
+    parallel_solve_problem(problem.initialize, problem.func, problem.finalize, my_rank, num_procs, pypar.send, pypar.receive)
+  File "/home/jason/pypar/parabola/Parabola.py", line 29, in parallel_solve_problem
+    my_input_args = get_subproblem_input_args(input_args, my_rank, num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 10, in get_subproblem_input_args
+    sub_ns = simple_partitioning(len(input_args), num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 6, in simple_partitioning
+    sublength[i] += 1
+NameError: global name 'sublength' is not defined
+    sub_ns = simple_partitioning(len(input_args), num_procs)
+  File "/home/jason/pypar/parabola/Parabola.py", line 6, in simple_partitioning
+    sublength[i] += 1
+NameError: global name 'sublength' is not defined
+--------------------------------------------------------------------------
+mpirun has exited due to process rank 2 with PID 48162 on
+node n7 exiting without calling "finalize". This may
+have caused other processes in the application to be
+terminated by signals sent by mpirun (as reported here).
+--------------------------------------------------------------------------
+[n7:48155] 7 more processes have sent help message help-mpi-btl-openib.txt / no active ports found
+[n7:48155] Set MCA parameter "orte_base_help_aggregate" to 0 to see all help / error messages

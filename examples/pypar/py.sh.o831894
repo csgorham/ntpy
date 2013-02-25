@@ -1,0 +1,3 @@
+CMA: unable to open /dev/infiniband/rdma_cm
+Pypar (version 2.1.5) initialised MPI OK with 1 processors
+I am proc 0 of 1 on node n5

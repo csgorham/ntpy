@@ -1,0 +1,4 @@
+  File "/home/jason/pypar/parabola/parabola.py", line 35
+    def func(self, x, a=0, b=0, c=1)
+                                   ^
+SyntaxError: invalid syntax

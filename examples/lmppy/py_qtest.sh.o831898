@@ -1,0 +1,32 @@
+CMA: unable to open /dev/infiniband/rdma_cm
+Pypar (version 2.1.5) initialised MPI OK with 1 processors
+LAMMPS (19 Feb 2013)
+Lattice spacing in x,y,z = 1.6796 1.6796 1.6796
+Created orthogonal box = (0 0 0) to (6.71838 6.71838 6.71838)
+  1 by 1 by 1 MPI processor grid
+Created 256 atoms
+Setting up run ...
+Memory usage per processor = 1.82446 Mbytes
+Step Temp E_pair E_mol TotEng Press 
+       0         1.44   -6.7733681            0   -4.6218056   -5.0244179 
+     100   0.72628044   -5.7150774            0   -4.6299123   0.29765862 
+Loop time of 0.0447869 on 1 procs for 100 steps with 256 atoms
+
+Pair  time (%) = 0.0359623 (80.2965)
+Neigh time (%) = 0.00576401 (12.8698)
+Comm  time (%) = 0.00181651 (4.0559)
+Outpt time (%) = 7.20024e-05 (0.160767)
+Other time (%) = 0.00117207 (2.61698)
+
+Nlocal:    256 ave 256 max 256 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1395 ave 1395 max 1395 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    9654 ave 9654 max 9654 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 9654
+Ave neighs/atom = 37.7109
+Neighbor list builds = 5
+Dangerous builds = 0
+Proc 0 out of 1 procs has <lammps.lammps instance at 0x19c75b90>
