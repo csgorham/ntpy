@@ -31,6 +31,9 @@ variable	vz atom vz
 velocity				all create ${temp} ${seed} dist gaussian mom yes
 fix		1 all nve
 	dump		vel all custom 32 out.vel.bin vx vy vz
+	dump_modify	vel sort id
+	dump		pos all custom 32 out.pos.bin x y z
+	dump_modify	pos sort id
 	run		32768
 unfix		1
 undump		vel
