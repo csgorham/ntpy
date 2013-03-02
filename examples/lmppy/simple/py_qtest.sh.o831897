@@ -1,0 +1,46 @@
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+CMA: unable to open /dev/infiniband/rdma_cm
+Pypar (version 2.1.5) initialised MPI OK with 8 processors
+LAMMPS (19 Feb 2013)
+Lattice spacing in x,y,z = 1.6796 1.6796 1.6796
+Created orthogonal box = (0 0 0) to (6.71838 6.71838 6.71838)
+  2 by 2 by 2 MPI processor grid
+Created 256 atoms
+Setting up run ...
+Memory usage per processor = 1.78775 Mbytes
+Step Temp E_pair E_mol TotEng Press 
+       0         1.44   -6.7733681            0   -4.6218056   -5.0244179 
+     100   0.72628044   -5.7150774            0   -4.6299123   0.29765862 
+Loop time of 0.0175575 on 8 procs for 100 steps with 256 atoms
+
+Pair  time (%) = 0.00449243 (25.5869)
+Neigh time (%) = 0.000749528 (4.26899)
+Comm  time (%) = 0.011837 (67.4184)
+Outpt time (%) = 0.000108361 (0.617178)
+Other time (%) = 0.000370204 (2.10852)
+
+Nlocal:    32 ave 35 max 28 min
+Histogram: 2 0 1 0 0 1 0 0 2 2
+Nghost:    619.125 ave 624 max 613 min
+Histogram: 1 1 1 0 1 0 0 0 2 2
+Neighs:    1206.75 ave 1375 max 1038 min
+Histogram: 2 1 0 0 0 1 1 0 2 1
+
+Total # of neighbors = 9654
+Ave neighs/atom = 37.7109
+Neighbor list builds = 5
+Dangerous builds = 0
+Proc 2 out of 8 procs has <lammps.lammps instance at 0x9ccfb90>
+Proc 0 out of 8 procs has <lammps.lammps instance at 0x16886b90>
+Proc 1 out of 8 procs has <lammps.lammps instance at 0x6412b90>
+Proc 7 out of 8 procs has <lammps.lammps instance at 0xe683b90>
+Proc 5 out of 8 procs has <lammps.lammps instance at 0x19e34b90>
+Proc 6 out of 8 procs has <lammps.lammps instance at 0x1b217b90>
+Proc 4 out of 8 procs has <lammps.lammps instance at 0x1edb8b90>
+Proc 3 out of 8 procs has <lammps.lammps instance at 0x13cf6b90>
