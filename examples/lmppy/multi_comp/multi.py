@@ -13,24 +13,9 @@ import numpy as np
 ### Parameters ###
 numTsteps = 1024
 numAtoms = 256
-### IMPORTS ###
-import pypar
-import multiprocessing as mp
-from lammps import lammps
-import ctypes
-import numpy as np
-# import sys
-# sys.path.append('/home/kevin/projects/ntpy')
-# import ntpy.lattice as lt
-# import ntpy.param.lj as lj
-# import ntpy.nmd as norm
 
-### Parameters ###
 proc = pypar.size()
 myid = pypar.rank()
-
-numTsteps = 1024
-numAtoms = 256
 
 # Number of atoms calculated on by each lmp processs
 assert 256 % pypar.size() == 0
@@ -54,30 +39,36 @@ lmp1 = lammps()
 lmp1.file("lmp.simple")
 print "Proc %d out of %d procs has" % (pypar.rank(),pypar.size()),lmp1
 
+# Pre load functions 
+lmpC = lmp1.command
+lmpEV = lmp1.extract_variable
+pyparR = pypar.receive
+pyparS = pypar.send
+
 # Lammps run
 for istep in range(numTsteps):
-	lmp1.command('run 32 pre no post yes')
+	lmpC('run 32 pre no post yes')
 	# If main process
 	if myid == 0:
 		# First get the velocities associated with this process
- 		velx[istep, 0:numA2*(1)] = lmp1.extract_variable("vx", "all", 1)
- 		vely[istep, 0:numA2*(1)] = lmp1.extract_variable("vy", "all", 1)
- 		velz[istep, 0:numA2*(1)] = lmp1.extract_variable("vz", "all", 1)	
+ 		velx[istep, 0:numA2*(1)] = lmpEV("vx", "all", 1)
+ 		vely[istep, 0:numA2*(1)] = lmpEV("vy", "all", 1)
+ 		velz[istep, 0:numA2*(1)] = lmpEV("vz", "all", 1)	
 		# Next, collect the velocities from all the other processes
 		for i in range(1, proc):
-			velx[istep, numA2*i:numA2*(i+1)] = pypar.receive(source=i, buffer=velx[istep,numA2*i:numA2*(i+1)], tag=1)
-			vely[istep, numA2*i:numA2*(i+1)] = pypar.receive(source=i, buffer=vely[istep,numA2*i:numA2*(i+1)], tag=2)
-			velz[istep, numA2*i:numA2*(i+1)] = pypar.receive(source=i, buffer=velz[istep,numA2*i:numA2*(i+1)], tag=3)
+			velx[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=velx[istep,numA2*i:numA2*(i+1)], tag=1)
+			vely[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=vely[istep,numA2*i:numA2*(i+1)], tag=2)
+			velz[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=velz[istep,numA2*i:numA2*(i+1)], tag=3)
 
 	# Else, if not the main process
 	else:
 		# Run and send the velocity information back to proc 0
-		tmpVelx[:] = lmp1.extract_variable("vx", "all", 1)
-		tmpVely[:] = lmp1.extract_variable("vy", "all", 1)
-		tmpVelz[:] = lmp1.extract_variable("vz", "all", 1)
-		pypar.send(tmpVelx, destination=0, use_buffer=True, tag=1)
-		pypar.send(tmpVely, destination=0, use_buffer=True, tag=2)
-		pypar.send(tmpVelz, destination=0, use_buffer=True, tag=3)
+		tmpVelx[:] = lmpEV("vx", "all", 1)
+		tmpVely[:] = lmpEV("vy", "all", 1)
+		tmpVelz[:] = lmpEV("vz", "all", 1)
+		pyparS(tmpVelx, destination=0, use_buffer=True, tag=1)
+		pyparS(tmpVely, destination=0, use_buffer=True, tag=2)
+		pyparS(tmpVelz, destination=0, use_buffer=True, tag=3)
 
 if myid == 0:
 	print velx
