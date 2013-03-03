@@ -51,7 +51,7 @@ else:
 
 ###--- MAIN ---###
 lmp1 = lammps()
-lmp1.file("in.simple")
+lmp1.file("lmp.simple")
 print "Proc %d out of %d procs has" % (pypar.rank(),pypar.size()),lmp1
 
 # Lammps run
