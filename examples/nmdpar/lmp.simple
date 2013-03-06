@@ -1,0 +1,36 @@
+# 3d Lennard-Jones melt
+
+### Geometry ###
+units		lj
+atom_style	atomic
+read_data	lmp.pos
+
+### LJ Potentials ###
+pair_style	lj/cut 2.5
+pair_coeff	* * 1.0 1.0
+pair_modify	shift yes
+
+### Variables ###
+# LJ Parameters
+variable kB				equal 1.3806504e-23
+variable sigma_Ar		equal 3.4e-10
+variable eps_Ar			equal 1.67e-21
+variable mass_Ar		equal 6.63e-26
+variable tau_Ar			equal 2.1423e-12
+
+variable seed	equal 11111
+variable temp	equal 20*(${kB}/${eps_Ar})
+variable dt		equal 0.002
+
+# Velocity variables
+variable	x atom x
+variable	y atom y
+variable	z atom z
+variable	vx atom vx
+variable	vy atom vy
+variable	vz atom vz
+variable	id_atom equal id
+
+###--- MAIN ---###
+velocity				all create ${temp} ${seed} dist gaussian mom yes
+fix	1 all nve

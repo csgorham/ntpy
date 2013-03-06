@@ -11,7 +11,8 @@ import numpy as np
 # import ntpy.nmd as norm
 
 ### Parameters ###
-numTsteps = 1024
+# numTsteps = 1024
+numTsteps = 2**13
 numAtoms = 256
 
 proc = pypar.size()
@@ -24,9 +25,23 @@ numA2 = 256 / pypar.size()
 ## Create velocity Arrays
 # If main process
 if myid == 0:
-	velx = np.zeros( (numTsteps, numAtoms), dtype=float)
-	vely = np.zeros( (numTsteps, numAtoms), dtype=float)
-	velz = np.zeros( (numTsteps, numAtoms), dtype=float)
+	# velx = np.zeros( (numTsteps, numAtoms), dtype=float)
+	# vely = np.zeros( (numTsteps, numAtoms), dtype=float)
+	# velz = np.zeros( (numTsteps, numAtoms), dtype=float)
+	velx_base = mp.Array(ctypes.c_double, numTsteps*numAtoms)
+	velx = np.ctypeslib.as_array(velx_base.get_obj())
+	velx = velx.reshape(numTsteps, numAtoms)
+	vely_base = mp.Array(ctypes.c_double, numTsteps*numAtoms)
+	vely = np.ctypeslib.as_array(vely_base.get_obj())
+	vely = vely.reshape(numTsteps, numAtoms)
+	velz_base = mp.Array(ctypes.c_double, numTsteps*numAtoms)
+	velz = np.ctypeslib.as_array(velz_base.get_obj())
+	velz = velz.reshape(numTsteps, numAtoms)
+	print velx.shape
+	print vely.shape
+	print velz.shape
+
+
 # Else, if not main process
 else:
 	tmpVelx = np.zeros( (numA2), dtype=float)
@@ -74,11 +89,31 @@ if myid == 0:
 	print velx
 	print vely
 	print velz
+	print "==============================================================="
 
-	np.savetxt('out.vel.x.txt', velx, delimiter='\n')
-	np.savetxt('out.vel.y.txt', vely, delimiter='\n')
-	np.savetxt('out.vel.z.txt', velz, delimiter='\n')
+	# np.savetxt('out.vel.x.txt', velx, delimiter='\n')
+	# np.savetxt('out.vel.y.txt', vely, delimiter='\n')
+	# np.savetxt('out.vel.z.txt', velz, delimiter='\n')
+	def worker(out_q):
+		out_q.put(np.fft.fft(velx))
 
+	nprocs = 8
+	out_q = mp.Queue()
+	procs = []
+	for i in range(nprocs):
+		p = mp.Process(
+				target=worker,
+				args=(out_q,))
+
+		procs.append(p)
+		p.start()
+
+	for i in range(nprocs):
+		print out_q.get()
+
+	for p in procs:
+		p.join()
+		
 # START MP
 #shared_array_base = mp.Array(ctypes.c_double, 10*10)
 #shared_array = np.ctypeslib.as_array(shared_array_base.get_obj())

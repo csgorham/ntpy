@@ -152,7 +152,7 @@ def nmdProc(velx, vely, velz, eigVec, latPosx, latPosy, latPosz,
 			shape (numTstep / 2) and type float.
 	"""
 	# Initialize qdot
-	qdot = np.zeros( (nmd.numTstep) )
+	qdot = np.zeros( (numTstep) )
 
 	# Prereference functions
 	tile = np.tile
@@ -165,11 +165,11 @@ def nmdProc(velx, vely, velz, eigVec, latPosx, latPosy, latPosz,
 		latPosz[:]*( (kpt[ikpt,2])/(latVecz) ) ) 
 	
 	# Conjugate eigenvectors
-	eigx = np.tile(ma.conjugate(eigvec[(numAtomsUC*3*ikpt)+0: \
+	eigx = tile(conjugate(eigVec[(numAtomsUC*3*ikpt)+0: \
 				(numAtomsUC*3*(ikpt+1)):3, imode]),numUC)
-	eigy = np.tile(ma.conjugate(eigvec[(numAtomsUC*3*ikpt)+1: \
+	eigy = tile(conjugate(eigVec[(numAtomsUC*3*ikpt)+1: \
 				(numAtomsUC*3*(ikpt+1)):3, imode]),numUC)
-	eigz = np.tile(ma.conjugate(eigvec[(numAtomsUC*3*ikpt)+2: \
+	eigz = tile(conjugate(eigVec[(numAtomsUC*3*ikpt)+2: \
 				(numAtomsUC*3*(ikpt+1)):3, imode]),numUC)
 
 	# qdot: normal mode kinetic energy corrdinate
