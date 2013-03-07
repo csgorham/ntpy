@@ -11,6 +11,7 @@ sys.path.append('/home/kevin/projects/ntpy')
 # import ntpy.lattice as lt
 # import ntpy.param.lj as lj
 import ntpy.nmd as norm
+import matplotlib.pyplot as plt
 
 ### Parameters ###
 # SED params
@@ -45,23 +46,21 @@ tmpVel = np.zeros( (numAtoms * 3), dtype=float)
 ###--- MAIN ---###
 lmp1 = lammps()
 lmp1.file(nt.lammpsRunName + seed)
+# lmp1.file("lmp.simple")
 print "Proc %d out of %d procs has" % (pypar.rank(),pypar.size()),lmp1
 
 # Pre load functions 
 lmpC = lmp1.command
-lmpEV = lmp1.extract_variable
 lmpGA = lmp1.gather_atoms
 pyparR = pypar.receive
 pyparS = pypar.send
 
-x = np.zeros( (numAtoms * 3) )
+lmpC('fix	1 all nve')
 
 ### Lammps Run
 for istep in range(numTstep):
 	lmpC('run '+ str(nt.wStep)+ ' pre no post yes')
-
-	# x[:] = lmpGA("x", 1, 3)
-	# print x
+	# lmpC('run '+ str(nt.wStep)+ ' pre no post yes')
 
 	tmpVel[:] = lmpGA("v", 1, 3)
 
@@ -70,48 +69,30 @@ for istep in range(numTstep):
 		velx[istep,:] = tmpVel[0:numAtoms*3:3]
 		vely[istep,:] = tmpVel[1:numAtoms*3:3]
 		velz[istep,:] = tmpVel[2:numAtoms*3:3]
-
-
-		# print lmpGA("vx", "all", 1)
-		# velx[istep, :] = lmpGA("vx", "all", 1)
-		# vely[istep, :] = lmpGA("vy", "all", 1)
-		# velz[istep, :] = lmpGA("vz", "all", 1)
-
-		# First get the velocities associated with this mpi process
- 		# velx[istep, 0:numA2*(1)] = lmpEV("vx", "all", 1)
- 		# vely[istep, 0:numA2*(1)] = lmpEV("vy", "all", 1)
- 		# velz[istep, 0:numA2*(1)] = lmpEV("vz", "all", 1)	
-		# Next, collect the velocities from all the other mpi processes
-		# for i in range(1, proc):
-			# velx[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=velx[istep,numA2*i:numA2*(i+1)], tag=1)
-			# vely[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=vely[istep,numA2*i:numA2*(i+1)], tag=2)
-			# velz[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=velz[istep,numA2*i:numA2*(i+1)], tag=3)
-
-	# Else, if not the main mpi process
-	# else:
-		# Run and send the velocity information back to proc 0
-		# tmpVelx[:] = lmpEV("vx", "all", 1)
-		# tmpVely[:] = lmpEV("vy", "all", 1)
-		# tmpVelz[:] = lmpEV("vz", "all", 1)
-		# pyparS(tmpVelx, destination=0, use_buffer=True, tag=1)
-		# pyparS(tmpVely, destination=0, use_buffer=True, tag=2)
-		# pyparS(tmpVelz, destination=0, use_buffer=True, tag=3)
+		# velx[istep,:] = tmpVel[0:numAtoms]
+		# vely[istep,:] = tmpVel[numAtoms:numAtoms*2]
+		# velz[istep,:] = tmpVel[numAtoms*2:numAtoms*3]
 #-- END Lammps Run --#
 
 
 # Only perform on main mpi process
 if myid == 0:
-	print velx
-	print vely
-	print velz
 	print "==============================================================="
 	print "==============================================================="
 	print "==============================================================="
 
+	np.savetxt('out.vel.x.txt', velx, delimiter='\n')
+	np.savetxt('out.vel.y.txt', vely, delimiter='\n')
+	np.savetxt('out.vel.z.txt', velz, delimiter='\n')
+
+
+	print velx
+	print vely
+	print velz
+
 	def nmdProc(latPosx, latPosy, latPosz,
 			latVecx, latVecy, latVecz, kpt, ikpt, imode, numAtomsUC, numUC, mass,
-			numTstep, out_q):
-			# numTstep, out_q, eigvec):
+			numTstep, out_q, eigvec):
 
 		# Initialize qdot
 		qdot = np.zeros( (numTstep) )
@@ -172,25 +153,24 @@ if myid == 0:
 
 	out_q = mp.Queue()
 	procs = []
-	for ikpt in range(32):
+	for ikpt in range(8):
 		for imode in range(1):
 
 			# Gamma, shared mem for eigvecs switch
-			if nt.gamma == True:
-				p = mp.Process(
-					target=nmdProc,
-					args=(nt.latPos[:,0], nt.latPos[:,1], nt.latPos[:,2],
-							nt.ljLat, nt.ljLat, nt.ljLat, nt.kpt, ikpt,
-							imode, nt.numAtomsUC, nt.numUC, nt.ljMass, nt.numTstep,
-							out_q))
-			else:
-				p = mp.Process(
-					target=nmdProc,
-					args=(nt.latPos[:,0], nt.latPos[:,1], nt.latPos[:,2],
-							nt.ljLat, nt.ljLat, nt.ljLat, nt.kpt, ikpt,
-							imode, nt.numAtomsUC, nt.numUcell, nt.ljMass, nt.numTstep,
-							out_q))
-							# out_q, eigvec))
+			# if nt.gamma == True:
+				# p = mp.Process(
+					# target=nmdProc,
+					# args=(nt.latPos[:,0], nt.latPos[:,1], nt.latPos[:,2],
+							# nt.ljLat, nt.ljLat, nt.ljLat, nt.kpt, ikpt,
+							# imode, nt.numAtomsUC, nt.numUC, nt.ljMass, nt.numTstep,
+							# out_q))
+			# else:
+			p = mp.Process(
+				target=nmdProc,
+				args=(nt.latPos[:,0], nt.latPos[:,1], nt.latPos[:,2],
+						nt.ljLat, nt.ljLat, nt.ljLat, nt.kpt, ikpt,
+						imode, nt.numAtomsUC, nt.numUcell, nt.ljMass, nt.numTstep,
+						out_q, eigvec))
 
 			procs.append(p)
 			p.start()
@@ -198,6 +178,9 @@ if myid == 0:
 	print "after threads"
 
 	for i in range(nt.numKpts * nt.numModes):
+		x = out_q.get()
+		plt.semilogy(nt.omega[:], x[:])
+		plt.show()
 		print out_q.get()
 
 	print "after get"
