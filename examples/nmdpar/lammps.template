@@ -31,9 +31,9 @@ variable	w_step		equal W_STEP
 variable	t_fft		equal T_FFT
 variable	t_total		equal T_TOTAL
 variable	num_ffts	equal ${t_total}/${t_fft}
-variable	vx atom vx
-variable	vy atom vy
-variable	vz atom vz
+# variable	vx atom vx
+# variable	vy atom vy
+# variable	vz atom vz
 
 
 ### BEGIN SIMULATION ###

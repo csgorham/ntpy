@@ -57,6 +57,7 @@ print "Proc %d out of %d procs has" % (pypar.rank(),pypar.size()),lmp1
 # Pre load functions 
 lmpC = lmp1.command
 lmpEV = lmp1.extract_variable
+lmpGA = lmp1.gather_atoms
 pyparR = pypar.receive
 pyparS = pypar.send
 
@@ -64,26 +65,34 @@ pyparS = pypar.send
 for istep in range(numTsteps):
 	lmpC('run 32 pre no post yes')
 	# If main process
-	if myid == 0:
+	# if myid == 0:
+	vx = lmp1.gather_atoms("v",1,3)
+	print vx
+		# print lmpGA("vy", 1, 1)
+		# print lmpGA("vz", 1, 1)
+		# velx[istep, :] = lmpGA("vx", "all", 3)
+		# vely[istep, :] = lmpGA("vx", "all", 3)
+		# velz[istep, :] = lmpGA("vx", "all", 3)
+		# print velx[istep, :]
 		# First get the velocities associated with this process
- 		velx[istep, 0:numA2*(1)] = lmpEV("vx", "all", 1)
- 		vely[istep, 0:numA2*(1)] = lmpEV("vy", "all", 1)
- 		velz[istep, 0:numA2*(1)] = lmpEV("vz", "all", 1)	
+ 		# velx[istep, 0:numA2*(1)] = lmpEV("vx", "all", 1)
+ 		# vely[istep, 0:numA2*(1)] = lmpEV("vy", "all", 1)
+ 		# velz[istep, 0:numA2*(1)] = lmpEV("vz", "all", 1)	
 		# Next, collect the velocities from all the other processes
-		for i in range(1, proc):
-			velx[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=velx[istep,numA2*i:numA2*(i+1)], tag=1)
-			vely[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=vely[istep,numA2*i:numA2*(i+1)], tag=2)
-			velz[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=velz[istep,numA2*i:numA2*(i+1)], tag=3)
+		# for i in range(1, proc):
+			# velx[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=velx[istep,numA2*i:numA2*(i+1)], tag=1)
+			# vely[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=vely[istep,numA2*i:numA2*(i+1)], tag=2)
+			# velz[istep, numA2*i:numA2*(i+1)] = pyparR(source=i, buffer=velz[istep,numA2*i:numA2*(i+1)], tag=3)
 
 	# Else, if not the main process
-	else:
+	# else:
 		# Run and send the velocity information back to proc 0
-		tmpVelx[:] = lmpEV("vx", "all", 1)
-		tmpVely[:] = lmpEV("vy", "all", 1)
-		tmpVelz[:] = lmpEV("vz", "all", 1)
-		pyparS(tmpVelx, destination=0, use_buffer=True, tag=1)
-		pyparS(tmpVely, destination=0, use_buffer=True, tag=2)
-		pyparS(tmpVelz, destination=0, use_buffer=True, tag=3)
+		# tmpVelx[:] = lmpEV("vx", "all", 1)
+		# tmpVely[:] = lmpEV("vy", "all", 1)
+		# tmpVelz[:] = lmpEV("vz", "all", 1)
+		# pyparS(tmpVelx, destination=0, use_buffer=True, tag=1)
+		# pyparS(tmpVely, destination=0, use_buffer=True, tag=2)
+		# pyparS(tmpVelz, destination=0, use_buffer=True, tag=3)
 
 if myid == 0:
 	print velx

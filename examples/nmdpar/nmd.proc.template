@@ -16,26 +16,15 @@ import ntpy.nmd as norm
 # SED params
 seed = 'SEED'
 
-
-# numTstep = 1024
-# numTstep = 2**13
-# numAtoms = 256
 numTstep = nt.numTstep
 numAtoms = nt.numAtoms
 
 proc = pypar.size()
 myid = pypar.rank()
 
-# Number of atoms calculated on by each lmp processs
-assert 256 % pypar.size() == 0
-numA2 = 256 / pypar.size()
-
 ## Create velocity Arrays
 # If main process
 if myid == 0:
-	# velx = np.zeros( (numTstep, numAtoms), dtype=float)
-	# vely = np.zeros( (numTstep, numAtoms), dtype=float)
-	# velz = np.zeros( (numTstep, numAtoms), dtype=float)
 	velx_base = mp.Array(ctypes.c_double, numTstep*numAtoms)
 	velx = np.ctypeslib.as_array(velx_base.get_obj())
 	velx = velx.reshape(numTstep, numAtoms)
@@ -49,12 +38,8 @@ if myid == 0:
 	print vely.shape
 	print velz.shape
 
-
-# Else, if not main process
-else:
-	tmpVelx = np.zeros( (numA2), dtype=float)
-	tmpVely = np.zeros( (numA2), dtype=float)
-	tmpVelz = np.zeros( (numA2), dtype=float)
+# Temporary array for all atoms
+tmpVel = np.zeros( (numAtoms * 3), dtype=float)
 
 
 ###--- MAIN ---###
@@ -69,15 +54,28 @@ lmpGA = lmp1.gather_atoms
 pyparR = pypar.receive
 pyparS = pypar.send
 
+x = np.zeros( (numAtoms * 3) )
+
 ### Lammps Run
 for istep in range(numTstep):
 	lmpC('run '+ str(nt.wStep)+ ' pre no post yes')
 
+	# x[:] = lmpGA("x", 1, 3)
+	# print x
+
+	tmpVel[:] = lmpGA("v", 1, 3)
+
 	# If main mpi process
 	if myid == 0:
-		velx[istep, :] = lmpGA("vx", "all", 3)
-		vely[istep, :] = lmpGA("vy", "all", 3)
-		velz[istep, :] = lmpGA("vz", "all", 3)
+		velx[istep,:] = tmpVel[0:numAtoms*3:3]
+		vely[istep,:] = tmpVel[1:numAtoms*3:3]
+		velz[istep,:] = tmpVel[2:numAtoms*3:3]
+
+
+		# print lmpGA("vx", "all", 1)
+		# velx[istep, :] = lmpGA("vx", "all", 1)
+		# vely[istep, :] = lmpGA("vy", "all", 1)
+		# velz[istep, :] = lmpGA("vz", "all", 1)
 
 		# First get the velocities associated with this mpi process
  		# velx[istep, 0:numA2*(1)] = lmpEV("vx", "all", 1)
@@ -103,16 +101,17 @@ for istep in range(numTstep):
 
 # Only perform on main mpi process
 if myid == 0:
-	# print velx
-	# print vely
-	# print velz
+	print velx
+	print vely
+	print velz
 	print "==============================================================="
 	print "==============================================================="
 	print "==============================================================="
 
 	def nmdProc(latPosx, latPosy, latPosz,
 			latVecx, latVecy, latVecz, kpt, ikpt, imode, numAtomsUC, numUC, mass,
-			numTstep, out_q, eigvec):
+			numTstep, out_q):
+			# numTstep, out_q, eigvec):
 
 		# Initialize qdot
 		qdot = np.zeros( (numTstep) )
@@ -151,6 +150,7 @@ if myid == 0:
 				(keFft[:].imag * keFft[:].imag)
 
 		# Add spectral energy denisty for a single FFT to whole
+		print specEDFft
 		out_q.put(specEDFft[:numTstep/2])
 	#-- END nmdProc --#
 
@@ -168,16 +168,17 @@ if myid == 0:
 	# Load Eigenvectors
 	gulp = np.load('post.gulp.npz')
 	eigvec = gulp['eigvec']
+	# print nt.latPos
 
 	out_q = mp.Queue()
 	procs = []
-	for ikpt in range(16):
+	for ikpt in range(32):
 		for imode in range(1):
 
 			# Gamma, shared mem for eigvecs switch
 			if nt.gamma == True:
 				p = mp.Process(
-					target=worker,
+					target=nmdProc,
 					args=(nt.latPos[:,0], nt.latPos[:,1], nt.latPos[:,2],
 							nt.ljLat, nt.ljLat, nt.ljLat, nt.kpt, ikpt,
 							imode, nt.numAtomsUC, nt.numUC, nt.ljMass, nt.numTstep,
@@ -188,7 +189,8 @@ if myid == 0:
 					args=(nt.latPos[:,0], nt.latPos[:,1], nt.latPos[:,2],
 							nt.ljLat, nt.ljLat, nt.ljLat, nt.kpt, ikpt,
 							imode, nt.numAtomsUC, nt.numUcell, nt.ljMass, nt.numTstep,
-							out_q, eigvec))
+							out_q))
+							# out_q, eigvec))
 
 			procs.append(p)
 			p.start()
