@@ -18,6 +18,10 @@ def value(string):
 					'hbar' : 1.054e-34,	# Planck's constant
 					'avog' : 6.0221414e23, # Avogadro's number
 					'c' : 299792485.0, # Speed of light m/s
+
+					'J/eV' : 1.60217657e-19, # Joules per eV
+					'eV/J' : 6.24150934e18, # eV per Joule
+
 					'topeta' : 1e-15,	# To peta-
 					'totera' : 1e-12,	# To tera-
 					'togiga' : 1e-9,	# To giga-
