@@ -16,7 +16,7 @@ echo `cat $PBS_NODEFILE`
 
 
 
-RUNPATH=/home/kparrish/projects/ntpy/examples/thesis
+RUNPATH=$PWD
 EXEPATH=/opt/lammps/src
 
 cd $RUNPATH
