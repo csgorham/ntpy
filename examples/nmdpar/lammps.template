@@ -48,7 +48,8 @@ variable	vz atom vz
 			timestep		${dt}
 			thermo_style  	custom step temp press etotal vol
 			thermo			5000
-			run             250000	
+			# run             250000	
+			run             25000	
 		unfix 			2
 	unfix 			1
 
@@ -57,7 +58,8 @@ variable	vz atom vz
 		timestep		${dt}
 		thermo_style  	custom step temp press etotal pe ke vol
 		thermo			5000
-		run             250000	
+		# run             250000	
+		run             25000	
 	unfix 			1
 
 # NMD Velocity Dump

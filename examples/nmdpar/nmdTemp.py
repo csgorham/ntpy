@@ -2,7 +2,7 @@
 ## ## ## nmd.py config file	## ## ##
 import numpy as np
 import sys
-ntpyPath = '/home/kevin/projects/ntpy'
+ntpyPath = '/home/kparrish/projects/ntpy'
 sys.path.append(ntpyPath) # Needed to recognize ntpy module
 import ntpy.lattice as lt
 import ntpy.param.lj as lj
