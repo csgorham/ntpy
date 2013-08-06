@@ -1,0 +1,193 @@
+### IMPORTS ###
+import nmdTemp as nt
+import pypar
+import multiprocessing as mp
+from lammps import lammps
+import ctypes
+import numpy as np
+import numpy.ma as ma
+import sys
+sys.path.append('/home/kparrish/projects/ntpy')
+# import ntpy.lattice as lt
+# import ntpy.param.lj as lj
+import ntpy.nmd as norm
+import matplotlib.pyplot as plt
+
+### Parameters ###
+# SED params
+seed = 'SEED'
+
+numTstep = nt.numTstep
+numAtoms = nt.numAtoms
+
+proc = pypar.size()
+myid = pypar.rank()
+
+## Create velocity Arrays
+# If main process
+if myid == 0:
+	velx_base = mp.Array(ctypes.c_double, numTstep*numAtoms)
+	velx = np.ctypeslib.as_array(velx_base.get_obj())
+	velx = velx.reshape(numTstep, numAtoms)
+	vely_base = mp.Array(ctypes.c_double, numTstep*numAtoms)
+	vely = np.ctypeslib.as_array(vely_base.get_obj())
+	vely = vely.reshape(numTstep, numAtoms)
+	velz_base = mp.Array(ctypes.c_double, numTstep*numAtoms)
+	velz = np.ctypeslib.as_array(velz_base.get_obj())
+	velz = velz.reshape(numTstep, numAtoms)
+
+# Temporary array for all atoms
+tmpVel = np.zeros( (numAtoms * 3), dtype=float)
+
+
+###--- MAIN ---###
+lmp1 = lammps()
+lmp1.file(nt.lammpsRunName + seed) # Run primer lammps file
+print "Proc %d out of %d procs has" % (pypar.rank(),pypar.size()),lmp1
+
+# Pre load functions 
+lmpC = lmp1.command
+lmpGA = lmp1.gather_atoms
+
+lmpC('fix	1 all nve')
+
+### Lammps Run
+for istep in range(numTstep):
+	lmpC('run '+ str(nt.wStep)+ ' pre no post yes')
+	# lmpC('run '+ str(nt.wStep)+ ' pre no post yes')
+
+	tmpVel[:] = lmpGA("v", 1, 3)
+
+	# If main mpi process
+	if myid == 0:
+		velx[istep,:] = tmpVel[0:numAtoms*3:3]
+		vely[istep,:] = tmpVel[1:numAtoms*3:3]
+		velz[istep,:] = tmpVel[2:numAtoms*3:3]
+		# velx[istep,:] = tmpVel[0:numAtoms]
+		# vely[istep,:] = tmpVel[numAtoms:numAtoms*2]
+		# velz[istep,:] = tmpVel[numAtoms*2:numAtoms*3]
+#-- END Lammps Run --#
+
+
+# Only perform on main mpi process
+if myid == 0:
+	print "==============================================================="
+	print "==============================================================="
+	print "==============================================================="
+
+	np.savetxt('out.vel.x.txt', velx, delimiter='\n')
+	# np.savetxt('out.vel.y.txt', vely, delimiter='\n')
+	# np.savetxt('out.vel.z.txt', velz, delimiter='\n')
+
+	# print velx
+	# print vely
+	# print velz
+
+
+	def nmdProc(latPosx, latPosy, latPosz,
+			latVecx, latVecy, latVecz, kpt, ikpt, imode, numAtomsUC, numUC, mass,
+			numTstep, out_q, eigvec):
+
+		# Initialize qdot
+		qdot = np.zeros( (numTstep) )
+
+		# Prereference functions
+		tile = np.tile
+		conjugate = ma.conjugate
+
+		# Spatial fourier transform factor
+		spatial = 2.0 * np.pi * 1j * (\
+			latPosx[:]*( (kpt[ikpt,0])/(latVecx) ) + \
+			latPosy[:]*( (kpt[ikpt,1])/(latVecy) ) + \
+			latPosz[:]*( (kpt[ikpt,2])/(latVecz) ) ) 
+	
+		# Conjugate eigenvectors
+		eigx = tile(conjugate(eigvec[(numAtomsUC*3*ikpt)+0: \
+					(numAtomsUC*3*(ikpt+1)):3, imode]),numUC)
+		eigy = tile(conjugate(eigvec[(numAtomsUC*3*ikpt)+1: \
+					(numAtomsUC*3*(ikpt+1)):3, imode]),numUC)
+		eigz = tile(conjugate(eigvec[(numAtomsUC*3*ikpt)+2: \
+					(numAtomsUC*3*(ikpt+1)):3, imode]),numUC)
+
+		# qdot: normal mode kinetic energy corrdinate
+		qdot = np.sum(((velx * eigx) + (vely * eigy) + (velz * eigz)) * \
+				np.exp(spatial) * np.sqrt(mass/numUC), axis=1)
+
+		# keXcorr: kinetic energy autocorrelation
+		result = np.correlate(qdot, qdot, mode='full', old_behavior=False)
+		keXcorr = result[result.size/2:] / result[result.size/2]
+	
+		# keFft: kinetic energy FFT
+		keFft = np.fft.fft(keXcorr[:])
+	
+		# specEDFft: spectral energy density for a single FFT
+		specEDFft = (keFft[:].real * keFft[:].real) + \
+				(keFft[:].imag * keFft[:].imag)
+
+		# Add spectral energy denisty for a single FFT to whole
+		print specEDFft
+		out_q.put(specEDFft[:numTstep/2])
+	#-- END nmdProc --#
+
+	# Decide is shared mem for eigenvectors GAMMA
+	# if nt.gamma == True:
+		# gulp = np.load('post.gulp.npz')
+		# eigvec_base = mp.Array(ctypes.c_double, numTstep*numAtoms)
+		# eigvec = np.ctypeslib.as_array(eigvec_base.get_obj())
+		# eigvec = eigvec.reshape(nt.numAtoms * nt.numModes, nt.numModes)
+		# eigvec[:,:] = gulp['eigvec']
+	# else:
+		# gulp = np.load('post.gulp.npz')
+		# eigvec[:,:] = gulp['eigvec']
+	
+	# Load Eigenvectors
+	gulp = np.load('post.gulp.npz')
+	eigvec = gulp['eigvec']
+
+	out_q = mp.Queue() # used to store results
+	procs = []
+	for ikpt in range(8):
+		for imode in range(1):
+
+			# Gamma, shared mem for eigvecs switch
+			# if nt.gamma == True:
+				# p = mp.Process(
+					# target=nmdProc,
+					# args=(nt.latPos[:,0], nt.latPos[:,1], nt.latPos[:,2],
+							# nt.ljLat, nt.ljLat, nt.ljLat, nt.kpt, ikpt,
+							# imode, nt.numAtomsUC, nt.numUC, nt.ljMass, nt.numTstep,
+							# out_q))
+			# else:
+			p = mp.Process(
+				target=nmdProc,
+				args=(nt.latPos[:,0], nt.latPos[:,1], nt.latPos[:,2],
+						nt.ljLat, nt.ljLat, nt.ljLat, nt.kpt, ikpt,
+						imode, nt.numAtomsUC, nt.numUcell, nt.ljMass, nt.numTstep,
+						out_q, eigvec))
+
+			procs.append(p)
+			p.start()
+
+	print "after threads"
+
+	# for i in range(nt.numKpts * nt.numModes):
+	for i in range(8 * 1):
+		x = out_q.get()
+		# plt.semilogy(nt.omega[:], x[:])
+		# print 'HERE!!!!!!!!!!'
+		# print len(x)
+		# print len(nt.omega[:])
+		plt.semilogy(range(10), x[:])
+		plt.show()
+		print out_q.get()
+
+	print "after get"
+
+	for p in procs:
+		p.join()
+	
+	print "after join"
+		
+# FINISH PYPAR
+pypar.finalize() 
+print 'last line of python script'
