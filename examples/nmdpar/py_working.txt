@@ -1,0 +1,156 @@
+Pypar (version 2.1.5) initialised MPI OK with 1 processors
+/usr/lib/python2.7/dist-packages/numpy/ctypeslib.py:411: RuntimeWarning: Item size computed from the PEP 3118 buffer format string does not match the actual item size.
+  return array(obj, copy=False)
+LAMMPS (16 Aug 2013)
+Reading data file ...
+  orthogonal box = (0 0 0) to (6.25294 6.25294 6.25294)
+  1 by 1 by 1 MPI processor grid
+  256 atoms
+Setting up run ...
+Memory usage per processor = 1.63113 Mbytes
+Step Temp E_pair E_mol TotEng Press Volume 
+       0   0.16534735   -7.4420341            0   -7.1949819   -1.4753638    244.48546 
+    1000   0.16534735   -7.4420341            0   -7.1949819   -1.4753638    244.48546 
+Loop time of 0.127476 on 1 procs for 1000 steps with 256 atoms
+
+Pair  time (%) = 0.119389 (93.6561)
+Neigh time (%) = 0 (0)
+Comm  time (%) = 0.00436425 (3.42359)
+Outpt time (%) = 3.00407e-05 (0.0235658)
+Other time (%) = 0.00369263 (2.89672)
+
+Nlocal:    256 ave 256 max 256 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1431 ave 1431 max 1431 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    11008 ave 11008 max 11008 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 11008
+Ave neighs/atom = 43
+Neighbor list builds = 0
+Dangerous builds = 0
+Setting up run ...
+Memory usage per processor = 1.63113 Mbytes
+Step Temp Press TotEng Volume 
+    1000   0.16534735   -1.4753638   -7.1949819    244.48546 
+    5000   0.16231086 -0.037923061   -6.9660365    244.48546 
+   10000   0.15999372   0.06525979   -6.9507195    244.48546 
+   15000   0.17238892 -0.016928017   -6.9489846    244.48546 
+   20000   0.17033571 -0.0025442523   -6.9492778    244.48546 
+   25000   0.16571266 -0.067184911   -6.9638071    244.48546 
+   26000   0.17462752  -0.02997606   -6.9470581    244.48546 
+Loop time of 3.50048 on 1 procs for 25000 steps with 256 atoms
+
+Pair  time (%) = 3.10796 (88.7864)
+Neigh time (%) = 0.171035 (4.88604)
+Comm  time (%) = 0.119372 (3.41015)
+Outpt time (%) = 0.00016427 (0.00469279)
+Other time (%) = 0.101958 (2.91267)
+
+Nlocal:    256 ave 256 max 256 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1431 ave 1431 max 1431 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    11005 ave 11005 max 11005 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 11005
+Ave neighs/atom = 42.9883
+Neighbor list builds = 419
+Dangerous builds = 0
+Setting up run ...
+Memory usage per processor = 1.63113 Mbytes
+Step Temp Press TotEng PotEng KinEng Volume 
+   26000   0.17462752  -0.02997606   -6.9470581   -7.2079761   0.26091808    244.48546 
+   30000   0.16348823  0.060414304   -6.9470633   -7.1913377   0.24427441    244.48546 
+   35000   0.16132313  0.072382783   -6.9470862   -7.1881257   0.24103945    244.48546 
+   40000   0.15441643   0.13397778   -6.9470584   -7.1777783   0.23071987    244.48546 
+   45000   0.16107573  0.076593497   -6.9470801   -7.1877499   0.24066979    244.48546 
+   50000    0.1653092  0.038577404   -6.9470811   -7.1940763   0.24699519    244.48546 
+   51000   0.16694837  0.032635514    -6.947068   -7.1965124   0.24944434    244.48546 
+Loop time of 3.47252 on 1 procs for 25000 steps with 256 atoms
+
+Pair  time (%) = 3.10066 (89.2912)
+Neigh time (%) = 0.169884 (4.89225)
+Comm  time (%) = 0.118759 (3.41996)
+Outpt time (%) = 0.000169039 (0.00486789)
+Other time (%) = 0.0830524 (2.3917)
+
+Nlocal:    256 ave 256 max 256 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1431 ave 1431 max 1431 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    11004 ave 11004 max 11004 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 11004
+Ave neighs/atom = 42.9844
+Neighbor list builds = 416
+Dangerous builds = 0
+Proc 0 out of 1 procs has <lammps.lammps instance at 0x2fc65a8>
+Step Temp Press TotEng PotEng KinEng Volume 
+   51000   0.16694837  0.032635514    -6.947068   -7.1965124   0.24944434    244.48546 
+   51032   0.17104604 -0.00039772756   -6.9470743   -7.2026411   0.25556684    244.48546 
+Loop time of 0.00427604 on 1 procs for 32 steps with 256 atoms
+
+Pair  time (%) = 0.00402021 (94.0173)
+Neigh time (%) = 0 (0)
+Comm  time (%) = 0.000137568 (3.21717)
+Outpt time (%) = 1.00136e-05 (0.234179)
+Other time (%) = 0.000108242 (2.53136)
+
+Nlocal:    256 ave 256 max 256 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1431 ave 1431 max 1431 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    11004 ave 11004 max 11004 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 11004
+Ave neighs/atom = 42.9844
+Neighbor list builds = 416
+Dangerous builds = 0
+in.nmd.proc.0.py:59: RuntimeWarning: Item size computed from the PEP 3118 buffer format string does not match the actual item size.
+  tmpVel[:] = lmpGA("v", 1, 3)
+Step Temp Press TotEng PotEng KinEng Volume 
+   51032   0.17104604 -0.00039772756   -6.9470743   -7.2026411   0.25556684    244.48546 
+   51064   0.15431065    0.1313453   -6.9470602    -7.177622    0.2305618    244.48546 
+Loop time of 0.00461292 on 1 procs for 32 steps with 256 atoms
+
+Pair  time (%) = 0.00393677 (85.3422)
+Neigh time (%) = 0.000398874 (8.64689)
+Comm  time (%) = 0.000156403 (3.39053)
+Outpt time (%) = 1.09673e-05 (0.237751)
+Other time (%) = 0.000109911 (2.38268)
+
+Nlocal:    256 ave 256 max 256 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1431 ave 1431 max 1431 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    10997 ave 10997 max 10997 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 10997
+Ave neighs/atom = 42.957
+Neighbor list builds = 417
+Dangerous builds = 0
+Step Temp Press TotEng PotEng KinEng Volume 
+   51064   0.15431065    0.1313453   -6.9470602    -7.177622    0.2305618    244.48546 
+   51096   0.17693459 -0.046417717   -6.9470735   -7.2114386   0.26436517    244.48546 
+Loop time of 0.00417304 on 1 procs for 32 steps with 256 atoms
+
+Pair  time (%) = 0.00390601 (93.6011)
+Neigh time (%) = 0 (0)
+Comm  time (%) = 0.000135183 (3.23944)
+Outpt time (%) = 1.40667e-05 (0.337085)
+Other time (%) = 0.000117779 (2.82237)
+
+Nlocal:    256 ave 256 max 256 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    1431 ave 1431 max 1431 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    10997 ave 10997 max 10997 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+
