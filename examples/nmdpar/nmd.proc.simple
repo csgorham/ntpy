@@ -1,0 +1,66 @@
+### IMPORTS ###
+import nmdTemp as nt
+import pypar
+import multiprocessing as mp
+from lammps import lammps
+import ctypes
+import numpy as np
+import numpy.ma as ma
+import sys
+sys.path.append('/home/kparrish/projects/ntpy')
+# import ntpy.lattice as lt
+# import ntpy.param.lj as lj
+import ntpy.nmd as norm
+import matplotlib.pyplot as plt
+
+### Parameters ###
+# SED params
+seed = 'SEED'
+
+numTstep = nt.numTstep
+numAtoms = nt.numAtoms
+
+proc = pypar.size()
+myid = pypar.rank()
+
+## Create velocity Arrays
+# If main process
+if myid == 0:
+	velx_base = mp.Array(ctypes.c_double, numTstep*numAtoms)
+	velx = np.ctypeslib.as_array(velx_base.get_obj())
+	velx = velx.reshape(numTstep, numAtoms)
+	vely_base = mp.Array(ctypes.c_double, numTstep*numAtoms)
+	vely = np.ctypeslib.as_array(vely_base.get_obj())
+	vely = vely.reshape(numTstep, numAtoms)
+	velz_base = mp.Array(ctypes.c_double, numTstep*numAtoms)
+	velz = np.ctypeslib.as_array(velz_base.get_obj())
+	velz = velz.reshape(numTstep, numAtoms)
+
+# Temporary array for all atoms
+tmpVel = np.zeros( (numAtoms * 3), dtype=float)
+
+
+###--- MAIN ---###
+lmp1 = lammps()
+lmp1.file(nt.lammpsRunName + seed) # Run primer lammps file
+print "Proc %d out of %d procs has" % (pypar.rank(),pypar.size()),lmp1
+
+# Pre load functions 
+lmpC = lmp1.command
+lmpGA = lmp1.gather_atoms
+
+lmpC('fix	1 all nve')
+
+### Lammps Run
+for istep in range(numTstep):
+	lmpC('run '+ str(nt.wStep)+ ' pre no post yes')
+
+	tmpVel[:] = lmpGA("v", 1, 3)
+
+	# If main mpi process
+	if myid == 0:
+		velx[istep,:] = tmpVel[0:numAtoms*3:3]
+		vely[istep,:] = tmpVel[1:numAtoms*3:3]
+		velz[istep,:] = tmpVel[2:numAtoms*3:3]
+#-- END Lammps Run --#
+
